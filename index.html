@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>City Touch Demo: Share Receipt</title>
+<style>
+:root{color-scheme:light;--bg:#e9ebf0;--card:#fbfbf9;--ink:#1c2230;--mut:#5b6272;--acc:#c8102e;--accink:#f7f5f0;--line:#dcdfe6;--ok:#1e7a46;--chip:#eef0f4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0e1118;--card:#1a1f2d;--ink:#eceef3;--mut:#a3a9b8;--acc:#ff5a70;--accink:#1c1018;--line:#2c3346;--ok:#4cc38a;--chip:#252b3c}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0e1118;--card:#1a1f2d;--ink:#eceef3;--mut:#a3a9b8;--acc:#ff5a70;--accink:#1c1018;--line:#2c3346;--ok:#4cc38a;--chip:#252b3c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Arial,sans-serif}
+.phone{max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;gap:16px;padding:20px;position:relative}
+h1,h2,p{margin:0}
+.demo{font-size:13px;color:var(--mut);text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.bal{background:var(--acc);color:var(--accink);border:0}
+.bal p:first-child{font-size:14px;opacity:.9}.bal p:last-child{font-size:34px;font-weight:700;margin-top:6px}
+.btn{font:inherit;font-size:16px;font-weight:600;border-radius:12px;padding:14px 16px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;width:100%;min-height:48px}
+.btn.pri{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.row:last-child{border:0}.row span:first-child{color:var(--mut)}.row span:last-child{text-align:right;font-weight:600}
+.ok{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.tick{width:56px;height:56px;border-radius:50%;background:var(--ok);color:var(--accink);display:grid;place-items:center;font-size:30px}
+.amt{font-size:32px;font-weight:700}
+.new{display:inline-block;font-size:11px;background:var(--ok);color:var(--accink);border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:middle}
+.two{display:flex;gap:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:420px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;font:inherit;font-size:15px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:700}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.apps button{font:inherit;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:var(--ink);cursor:pointer;padding:6px 0}
+.apps i{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-style:normal;font-size:22px;font-weight:700;color:#f7f5f0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:14px;z-index:30;max-width:90%;text-align:center}
+[hidden]{display:none!important}
+</style></head><body>
+<main class="phone">
+<p class="demo">Interactive demo of a proposed City Touch feature. Not the real app; no real money moves.</p>
+
+<section id="home" style="display:flex;flex-direction:column;gap:16px">
+<h1 style="font-size:22px">City Touch (demo)</h1>
+<div class="card bal"><p>Available balance</p><p>৳ 48,250.00</p></div>
+<button class="btn pri" onclick="go('confirm')">Send money</button>
+<div class="card"><p style="font-size:14px;color:var(--mut)">Tap Send money to walk through a transfer and see the new Share receipt button.</p></div>
+</section>
+
+<section id="confirm" hidden style="display:flex;flex-direction:column;gap:16px">
+<h2 style="font-size:22px">Confirm transfer</h2>
+<div class="card">
+<div class="row"><span>To</span><span>Rahim Uddin</span></div>
+<div class="row"><span>Account</span><span>•••• 4821</span></div>
+<div class="row"><span>Amount</span><span>৳ 5,000.00</span></div>
+<div class="row"><span>Note</span><span>Rent</span></div>
+</div>
+<button class="btn pri" onclick="go('receipt')">Confirm and send</button>
+<button class="btn" onclick="go('home')">Cancel</button>
+</section>
+
+<section id="receipt" hidden style="display:flex;flex-direction:column;gap:16px">
+<div class="ok"><div class="tick">✓</div><h2 style="font-size:20px">Transfer successful</h2><p class="amt">৳ 5,000.00</p></div>
+<div class="card">
+<div class="row"><span>To</span><span>Rahim Uddin</span></div>
+<div class="row"><span>Account</span><span>•••• 4821</span></div>
+<div class="row"><span>Date</span><span id="dt"></span></div>
+<div class="row"><span>Transaction ID</span><span>CT26102600481</span></div>
+<div class="row"><span>Status</span><span style="color:var(--ok)">Completed</span></div>
+</div>
+<button class="btn pri" onclick="openSheet()">Share receipt<span class="new">NEW</span></button>
+<div class="two"><button class="btn" onclick="toast('Download works as today (demo)')">Download</button><button class="btn" onclick="go('home')">Done</button></div>
+</section>
+</main>
+
+<div id="ov" class="ov" hidden onclick="if(event.target===this)closeSheet()">
+<div class="sheet" role="dialog" aria-label="Share receipt">
+<h2 style="font-size:18px">Share receipt as</h2>
+<div class="seg" id="seg">
+<button aria-pressed="true" data-f="PDF">PDF</button><button aria-pressed="false" data-f="Image">Image</button><button aria-pressed="false" data-f="Link">Secure link</button>
+</div>
+<div class="apps">
+<button data-a="WhatsApp"><i style="background:#1e8e4e">W</i>WhatsApp</button>
+<button data-a="Messenger"><i style="background:#2f6fe0">M</i>Messenger</button>
+<button data-a="Email"><i style="background:#c8102e">@</i>Email</button>
+<button data-a="SMS"><i style="background:#5b6272">S</i>SMS</button>
+</div>
+<button class="btn" id="copy">Copy receipt link</button>
+<button class="btn" onclick="closeSheet()">Cancel</button>
+</div></div>
+<div id="t" class="toast" hidden></div>
+
+<script>
+var fmt="PDF",tt;
+function $(i){return document.getElementById(i)}
+function go(id){["home","confirm","receipt"].forEach(function(s){$(s).hidden=s!==id});window.scrollTo(0,0)}
+function toast(m){var e=$("t");e.textContent=m;e.hidden=false;clearTimeout(tt);tt=setTimeout(function(){e.hidden=true},2600)}
+function openSheet(){$("ov").hidden=false}
+function closeSheet(){$("ov").hidden=true}
+$("dt").textContent=new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+document.querySelectorAll("#seg button").forEach(function(b){b.onclick=function(){fmt=b.dataset.f;document.querySelectorAll("#seg button").forEach(function(x){x.setAttribute("aria-pressed",x===b)})}});
+document.querySelectorAll(".apps button").forEach(function(b){b.onclick=function(){closeSheet();toast("Receipt ("+fmt+") sent via "+b.dataset.a+" (demo)")}});
+$("copy").onclick=function(){var l="https://citytouch.example/r/CT26102600481";try{navigator.clipboard.writeText(l).then(function(){toast("Link copied (demo)")},function(){toast("Link: "+l)})}catch(e){toast("Link: "+l)}closeSheet()};
+</script></body></html>
